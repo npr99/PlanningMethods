@@ -1,4 +1,7 @@
 
+import requests ## Required for the Census API
+import pandas as pd # For reading, writing and wrangling data
+
 class planning_methods():
   """
   Python File with Functions used in Planning Methods Course.
