@@ -1,5 +1,5 @@
 
-class planningmethod():
+class planning_methods():
   """
   Python File with Functions used in Planning Methods Course.
 
