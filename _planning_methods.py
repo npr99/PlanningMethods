@@ -3,6 +3,7 @@ import requests ## Required for the Census API
 import pandas as pd # For reading, writing and wrangling data
 import json # used to read in metadata for Census variables
 import numpy as np # For setting missing values
+import urllib.request, json  # reading in json files
 
 class planning_methods():
   """
@@ -61,10 +62,11 @@ class planning_methods():
       variable_metadata_hyperlink = (f'https://api.census.gov/data/{vintage}/{dataset_name}/variables/{variable}.json')
       # Obtain Census API JSON Data
        
-      !wget --no-cache --quiet --backups=1 {variable_metadata_hyperlink}
+      # wget fails when trying to load from github
+      #!wget --no-cache --quiet --backups=1 {variable_metadata_hyperlink}
 
-      with open(f"{variable}.json", "r") as rf:
-        variable_metadata = json.load(rf)
+      with urllib.request.urlopen(variable_metadata_hyperlink) as url:
+        variable_metadata = json.load(url)
 
       # Find the variable label 
       census_label_string = str(variable_metadata["label"])
