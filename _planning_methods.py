@@ -232,7 +232,7 @@ class planning_methods():
 
       # The state code is the first 2 characters of the 5 character county FIPS Code
       state_code = str(county_fips[0:2]).zfill(2)
-      county_code = str(county_fips[3:5]).zfill(3)
+      county_code = str(county_fips[2:5]).zfill(3)
 
       # ACS Narrative Profile
       acs_narrative_profile_base_url = 'https://www.census.gov/acs/www/data/data-tables-and-tools/narrative-profiles/'
