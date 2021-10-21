@@ -118,7 +118,31 @@ class planning_methods():
 
     return df
 
-  def descriptive_stats_table(df,title):
+  def descriptive_stats_table(df,**kwargs):
+    """
+        Args:
+            df (obj): Pandas DataFrame object.
+            kwargs (kwargs): Keyword arguments for visualization title.
+        Returns:
+            object: Pandas DataFrame object.
+    """
+
+    who = ""
+    what = ""
+    when = ""
+    where = ""
+
+    if "who" in kwargs.keys():
+        who = kwargs["who"]
+    if "what" in kwargs.keys():
+        what = kwargs["what"]
+    if "when" in kwargs.keys():
+        when = kwargs["when"]
+    if "where" in kwargs.keys():
+        where = kwargs["where"]
+
+    table_title = "Table. " + who + " " + what + " " + where + " " + when + "."
+
     # Caption Title Style
     styles = [dict(selector="caption", 
         props=[("text-align", "center"),
@@ -127,9 +151,11 @@ class planning_methods():
                 ("color", 'black')])]    # the color value can not be None
 
     float_col_list = list(df.select_dtypes(include=['float']).columns)
-    table1 = df[float_col_list].describe().T
+
+    # Select Esimates Only
+    estimate_cols = [col for col in float_col_list if col.endswith("(Estimate)")]
+    table1 = df[estimate_cols].describe().T
     varformat = "{:,.2f}" # The variable format adds a comma and rounds up
-    table_title = title
     table1 = table1.style.set_caption(table_title)\
       .format(varformat)\
       .set_table_styles(styles)\
