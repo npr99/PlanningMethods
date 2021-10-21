@@ -266,7 +266,7 @@ class planning_methods():
       else:
         acstable = acstable + '1Y'
        
-      geography = '&g=0500000US'+county_fips
+      geography = 'g=0500000US'+county_fips
       data_census_gov_url = data_census_gov_base_url + 'table?tid='+acstable+year+'.'+tableid+'&'+geography
       print('\n')
       print('For data.census.gov data click on link:')
