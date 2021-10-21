@@ -117,3 +117,22 @@ class planning_methods():
       df = df.rename(columns={variable: label_addvintage_addtype}) 
 
     return df
+
+  def descriptive_stats_table(df,title):
+    # Caption Title Style
+    styles = [dict(selector="caption", 
+        props=[("text-align", "center"),
+                ("caption-side", "top"),
+                ("font-size", "150%"),
+                ("color", 'black')])]    # the color value can not be None
+
+    float_col_list = list(df.select_dtypes(include=['float']).columns)
+    table1 = df[float_col_list].describe().T
+    varformat = "{:,.2f}" # The variable format adds a comma and rounds up
+    table_title = title
+    table1 = table1.style.set_caption(table_title)\
+      .format(varformat)\
+      .set_table_styles(styles)\
+      .set_properties(**{'text-align': 'right','font-size': '20pt','border': '2px solid black','width': '100px'})
+    
+    return table1
