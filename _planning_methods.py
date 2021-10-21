@@ -180,3 +180,26 @@ class planning_methods():
     outliers_df = outliers_df.sort_values(by = [variable_to_check],  ascending=False)
       
     return outliers_df
+
+
+  def generate_source_county_links(year,county_fips,):
+
+      # The state code is the first 2 characters of the 5 character county FIPS Code
+      state_code = str(county_fips[0:2]).zfill(2)
+      county_code = str(county_fips[3:5]).zfill(3)
+
+      # ACS Narrative Profile
+      acs_narrative_profile_base_url = 'https://www.census.gov/acs/www/data/data-tables-and-tools/narrative-profiles/'
+      acs_narrative_profile_url = acs_narrative_profile_base_url+year+'/report.php?geotype=county&state='+state_code+'&county='+county_code
+
+      print('For an ACS Narrative Profile click on link:')
+      print(acs_narrative_profile_url)
+
+
+      # Census Reporter Link
+      census_reporter_base_url = 'https://censusreporter.org/profiles/'
+      census_reporter_url = census_reporter_base_url + '05000US'+county_fips
+
+      print('\n')
+      print('For a Census Reproter Profile click on link:')
+      print(census_reporter_url)
