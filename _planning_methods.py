@@ -162,3 +162,21 @@ class planning_methods():
       .set_properties(**{'text-align': 'right','font-size': '20pt','border': '2px solid black','width': '100px'})
     
     return table1
+
+
+  def find_zscore_outliers(df,variable_to_check):
+    mean = df[variable_to_check].mean()
+    standard_deviation = df[variable_to_check].std()
+    df[variable_to_check+' Z-score'] = (df[variable_to_check] - mean)/standard_deviation
+    # Create a new variable to identify outliers
+    df['Z-score Outlier '+variable_to_check] = 0
+    df.loc[abs(df[variable_to_check+' Z-score']) > 3, 
+                'Z-score Outlier '+variable_to_check] = 1
+
+    # Return Outliers
+    outliers_df = df.loc[df['Z-score Outlier '+variable_to_check] == 1]
+
+    # Sort Values
+    outliers_df = outliers_df.sort_values(by = [variable_to_check],  ascending=False)
+      
+    return outliers_df
