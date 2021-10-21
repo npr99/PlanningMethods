@@ -118,6 +118,52 @@ class planning_methods():
 
     return df
 
+
+  def percent_pop_by_age_sex(years: list = ['2019'], acs_5_year = True):
+    """
+    Collect Census Data by percent population by age and sex.
+    """
+
+    tableid = 'S0101'
+    columns = {4 : 'Percent Male',
+              6 : 'Percent Female'
+              }
+    # There are 18 age cohorts under 5 years to 85 years and over
+    age_cohorts = 18
+    # What is the variable number for thefirst age cohort
+    first_age_cohort_variable = 2
+
+    # Create an empty "container" to store multiple ACS years for the data
+    acs_df = {} 
+
+    if acs_5_year == True:
+      dataset_name = 'acs/acs5/subject'
+    else:
+      dataset_name = 'acs/acs1/subject'
+    vintages = years
+
+    for column in columns:
+      total_column = column - 1
+      total_estimate_var = tableid+'_C0'+str(total_column)+"_"+'001E'
+      total_moe_var = tableid+'_C0'+str(total_column)+"_"+'001M'
+      get_vars = 'GEO_ID,NAME,'+total_estimate_var+ ','+total_moe_var
+      for age_variable in range(0,age_cohorts):
+        age_cohort_var = first_age_cohort_variable + age_variable
+        age_cohort_var_str = str(age_cohort_var).zfill(3)
+        get_estimate_var = tableid+'_C0'+str(column)+"_"+age_cohort_var_str+'E'
+        get_moe_var = tableid+'_C0'+str(column)+"_"+age_cohort_var_str+'M'
+        get_vars = get_vars + ',' + get_estimate_var + ',' + get_moe_var
+
+      # Get dat for the list of variables
+      for vintage in vintages:
+        acs_df[vintage+' '+columns[column]] = planning_methods.obtain_census_api(get_vars = get_vars,
+                                                            dataset_name = dataset_name, 
+                                                            vintage = vintage)
+        
+        acs_df[vintage+' '+columns[column]] = planning_methods.clean_acs_variables(acs_df[vintage+' '+columns[column]],vintage, dataset_name, get_vars)
+
+    return acs_df   
+
   def descriptive_stats_table(df,**kwargs):
     """
         Args:
@@ -182,7 +228,7 @@ class planning_methods():
     return outliers_df
 
 
-  def generate_source_county_links(year,county_fips,):
+  def generate_source_county_links(year,county_fips,tableid: str = 'S0101', acs_5_year = True):
 
       # The state code is the first 2 characters of the 5 character county FIPS Code
       state_code = str(county_fips[0:2]).zfill(2)
@@ -203,3 +249,25 @@ class planning_methods():
       print('\n')
       print('For a Census Reproter Profile click on link:')
       print(census_reporter_url)
+
+      # data.census.gov link
+      data_census_gov_base_url = 'https://data.census.gov/cedsci/'
+      
+      # set ACS Table Link
+      first_letter_of_tableid = tableid[0:1]
+      # If first letter is S then ACS Table is a Subject Table
+      if first_letter_of_tableid == "S":
+        acstable = 'ACSST'
+      if first_letter_of_tableid == "B":
+        acstable = 'ACSDT'
+      # Check 5-year of 1-year
+      if acs_5_year == True:
+        acstable = acstable + '5Y'
+      else:
+        acstable = acstable + '1Y'
+       
+      geography = '&g=0500000US'+county_fips
+      data_census_gov_url = data_census_gov_base_url + 'table?tid='+acstable+year+'.'+tableid+'&'+geography
+      print('\n')
+      print('For data.census.gov data click on link:')
+      print(data_census_gov_url)
