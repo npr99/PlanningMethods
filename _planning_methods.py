@@ -247,7 +247,7 @@ class planning_methods():
       census_reporter_url = census_reporter_base_url + '05000US'+county_fips
 
       print('\n')
-      print('For a Census Reproter Profile click on link:')
+      print('For a Census Reporter Profile click on link:')
       print(census_reporter_url)
 
       # data.census.gov link
