@@ -38,10 +38,14 @@ class planning_methods():
 
           """
           # Check geography hierarchy
-          if census_geography == 'state:'+state:
-            geography_hierarchy = ''
-          elif census_geography == 'county:'+county:
+          if (
+            census_geography == 'county:*' or 
+            census_geography == 'tract:*' or 
+            census_geography == 'block:*'
+            ):
             geography_hierarchy =  '&in=state:' + state + '&in=county:' + county 
+          else:
+            geography_hierarchy = ''
           # Set up hyperlink for Census API
           api_hyperlink = ('https://api.census.gov/data/' + vintage + '/'+dataset_name + '?get=' + get_vars +
                           geography_hierarchy + '&for=' + census_geography)
