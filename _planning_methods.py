@@ -37,9 +37,14 @@ class planning_methods():
               obj, dict: A dataframe for with Census data
 
           """
+          # Check geography hierarchy
+          if census_geography == 'state:'+state:
+            geography_hierarchy = ''
+          elif census_geography == 'county:'+county:
+            geography_hierarchy =  '&in=state:' + state + '&in=county:' + county 
           # Set up hyperlink for Census API
           api_hyperlink = ('https://api.census.gov/data/' + vintage + '/'+dataset_name + '?get=' + get_vars +
-                          '&in=state:' + state + '&in=county:' + county + '&for=' + census_geography)
+                          geography_hierarchy + '&for=' + census_geography)
 
           print("Census API data from: " + api_hyperlink)
 
