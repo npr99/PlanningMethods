@@ -9,7 +9,7 @@ class planning_methods():
   """
   Python File with Functions used in Planning Methods Course.
 
-  version 0.0.2 2022-06-15
+  version 0.0.2 2022-06-15T1246
 
   """
 
