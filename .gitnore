@@ -1,0 +1,8 @@
+# What files do you want github to ignore?
+# Good gitnore examples
+# https://github.com/gboeing/osmnx/blob/main/.gitignore
+
+# Compiled source #
+###################
+*.csv
+*.json
