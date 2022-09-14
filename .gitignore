@@ -2,7 +2,7 @@
 # Good gitnore examples
 # https://github.com/gboeing/osmnx/blob/main/.gitignore
 
-# Compiled source #
+# File types to ignore#
 ###################
 *.csv
 *.json
