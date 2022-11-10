@@ -61,7 +61,7 @@ class planning_methods():
           return df
 
 
-  def clean_acs_variables(df,vintage,dataset_name,get_vars):
+  def clean_acs_variables(df,vintage,dataset_name,get_vars, print_annotations = False):
     """
     Function runs loop to rename variables, set variable type, and 
     address missing values in ACS data.
@@ -101,7 +101,8 @@ class planning_methods():
           label_addvintage_addtype = label_addvintage + ' (MOE)'
       else:
         label_addvintage_addtype = label_addvintage
-      print(vintage,"Renameing",variable," = ",label_addvintage_addtype,"Changing type to",variable_metadata["predicateType"])
+      if print_annotations == True:
+        print(vintage,"Renaming",variable," = ",label_addvintage_addtype,"Changing type to",variable_metadata["predicateType"])
 
       # Change variable type
       df[variable] = df[variable].astype(variable_metadata["predicateType"])
@@ -117,9 +118,10 @@ class planning_methods():
       for Annotation_value in Annotation_values:
         observations_with_annotation = len(df.loc[(df[variable] == Annotation_value)])
         if observations_with_annotation > 0:
-          print(observations_with_annotation,"Observations have",Annotation_value)
-          print(Annotation_values[Annotation_value])
-          print('Replacing values with missing.')
+          if print_annotations == True:
+            print(observations_with_annotation,"Observations have",Annotation_value)
+            print(Annotation_values[Annotation_value])
+            print('Replacing values with missing.')
           df.loc[(df[variable] == Annotation_value), variable] = np.nan
 
 
@@ -207,7 +209,7 @@ class planning_methods():
 
     float_col_list = list(df.select_dtypes(include=['float']).columns)
 
-    # Select Esimates Only
+    # Select Estimates Only
     estimate_cols = [col for col in float_col_list if col.endswith("(Estimate)")]
     table1 = df[estimate_cols].describe().T
     varformat = "{:,.2f}" # The variable format adds a comma and rounds up
@@ -220,20 +222,31 @@ class planning_methods():
 
 
   def find_zscore_outliers(df,variable_to_check):
-    mean = df[variable_to_check].mean()
-    standard_deviation = df[variable_to_check].std()
-    df[variable_to_check+' Z-score'] = (df[variable_to_check] - mean)/standard_deviation
+    estimate_var = variable_to_check + ' (Estimate)'
+    moe_var = variable_to_check + ' (MOE)'
+    
+    mean = df[estimate_var].mean()
+    standard_deviation = df[estimate_var].std()
+    df[variable_to_check+' Z-score'] = (df[estimate_var] - mean)/standard_deviation
+    
     # Create a new variable to identify outliers
-    df['Z-score Outlier '+variable_to_check] = 0
+    df['Z-score Outlier '+estimate_var] = 0
     df.loc[abs(df[variable_to_check+' Z-score']) > 3, 
-                'Z-score Outlier '+variable_to_check] = 1
+                'Z-score Outlier '+estimate_var] = 1
+
+    # Add Coefficients of variation
+    df[estimate_var+' SE'] = \
+        df[moe_var]/1.645
+    df[estimate_var+' CV'] = \
+        df[estimate_var+' SE']/df[estimate_var]
 
     # Return Outliers
-    outliers_df = df.loc[df['Z-score Outlier '+variable_to_check] == 1]
+    outliers_df = df.loc[df['Z-score Outlier '+estimate_var] == 1]
 
     # Sort Values
-    outliers_df = outliers_df.sort_values(by = [variable_to_check],  ascending=False)
-      
+    outliers_df = outliers_df.sort_values(by = [estimate_var],  ascending=False)
+    
+
     return outliers_df
 
 
